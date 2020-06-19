@@ -8,9 +8,10 @@ space = float(float(widthHeight)/float(numOfLines))
 
 class Snake:
 
-    applePlace = []
     snakeBodyPlace = []
     newSnakeBodyPlace = []
+    applePlace = []
+    lastDirc = 5
     newBody = False
 
     def __init__(self):
@@ -18,7 +19,13 @@ class Snake:
         self.snakeBodyPlace.append([random.randint(0,numOfLines-1),random.randint(0,numOfLines-1)])
 
     def endGame(self):
-        pass
+        self.applePlace = []
+        self.snakeBodyPlace = []
+        self.applePlace = [random.randint(0,numOfLines-1),random.randint(0,numOfLines-1)]
+        self.snakeBodyPlace.append([random.randint(0,numOfLines-1),random.randint(0,numOfLines-1)])
+        newSnakeBodyPlace = []
+        lastDirc = 5
+        newBody = False
 
     def addBody(self):
         self.newBody = True
@@ -34,43 +41,71 @@ class Snake:
         self.addBody()
 
     def addMove(self, dirc):
+        endGame = False
         if self.newBody:
             self.newBody = False
             self.snakeBodyPlace.append(self.snakeBodyPlace[len(self.snakeBodyPlace)-1])
         for i in range(len(self.snakeBodyPlace)):
             if i == 0:
                 if dirc == 0:
-                    if self.snakeBodyPlace[0][1] == 0:
+                    if self.lastDirc == 2 and len(self.snakeBodyPlace) != 1:
+                        self.endGame()
+                        endGame = True
+                    elif self.snakeBodyPlace[0][1] == 0:
                         self.newSnakeBodyPlace.append([self.snakeBodyPlace[0][0],numOfLines-1])
                     else:
                         self.newSnakeBodyPlace.append([self.snakeBodyPlace[0][0],self.snakeBodyPlace[0][1]-1])
+                    self.lastDirc = 0
 
                 elif dirc == 1:
-                    if self.snakeBodyPlace[0][0] == numOfLines-1:
+                    if self.lastDirc == 3 and len(self.snakeBodyPlace) != 1:
+                        self.endGame()
+                        endGame = True
+                    elif self.snakeBodyPlace[0][0] == numOfLines-1:
                         self.newSnakeBodyPlace.append([0,self.snakeBodyPlace[0][1]])
                     else:
                         self.newSnakeBodyPlace.append([self.snakeBodyPlace[0][0]+1,self.snakeBodyPlace[0][1]])
+                    self.lastDirc = 1
 
                 elif dirc == 2:
-                    if self.snakeBodyPlace[0][1] == numOfLines-1:
+                    if self.lastDirc == 0 and len(self.snakeBodyPlace) != 1:
+                        self.endGame()
+                        endGame = True
+                    elif self.snakeBodyPlace[0][1] == numOfLines-1:
                         self.newSnakeBodyPlace.append([self.snakeBodyPlace[0][0],0])
                     else:
                         self.newSnakeBodyPlace.append([self.snakeBodyPlace[0][0],self.snakeBodyPlace[0][1]+1])
+                    self.lastDirc = 2
 
                 else:
-                    if self.snakeBodyPlace[0][0] == 0:
+                    if self.lastDirc == 1 and len(self.snakeBodyPlace) != 1:
+                        self.endGame()
+                        endGame = True
+                    elif self.snakeBodyPlace[0][0] == 0:
                         self.newSnakeBodyPlace.append([numOfLines-1,self.snakeBodyPlace[0][1]])
                     else:
                         self.newSnakeBodyPlace.append([self.snakeBodyPlace[0][0]-1,self.snakeBodyPlace[0][1]])
+                    self.lastDirc = 3
 
-                if self.newSnakeBodyPlace[0] == self.applePlace:
+                # seen = []
+                # print(self.newSnakeBodyPlace)
+                # for number in self.snakeBodyPlace:
+                #     if number in seen:
+                #         self.endGame()
+                #         endGame = True
+                #     else:
+                #         seen.append(number)
+
+                if endGame != True and self.newSnakeBodyPlace[0] == self.applePlace:
                     self.eatApple()
-            else:
+            elif endGame != True:
                 self.newSnakeBodyPlace.append(self.snakeBodyPlace[i-1])
 
-        self.snakeBodyPlace = self.newSnakeBodyPlace
-        self.newSnakeBodyPlace = []
-        self.drawEntity()
+        if endGame != True:
+            self.snakeBodyPlace = self.newSnakeBodyPlace
+            self.newSnakeBodyPlace = []
+
+            self.drawEntity()
 
     def drawEntity(self):
         mainCanvas.delete("all")
@@ -80,7 +115,8 @@ class Snake:
                 mainCanvas.create_line(i*space,j*space,(i)*space,(j+1)*space)
         for i in range(len(self.snakeBodyPlace)):
             body = self.snakeBodyPlace[i]
-            mainCanvas.create_rectangle(body[0]*space,body[1]*space,(body[0]+1)*space,(body[1]+1)*space, fill="#555")
+            mainCanvas.create_rectangle(body[0]*space,body[1]*space,
+                                        (body[0]+1)*space,(body[1]+1)*space, fill="#" + str(i%10) + str(i%10) + str(i%10))
 
         mainCanvas.create_rectangle(self.applePlace[0]*space,self.applePlace[1]*space,
                                     (self.applePlace[0]+1)*space,(self.applePlace[1]+1)*space, fill="#ff0000")
