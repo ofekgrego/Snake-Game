@@ -11,6 +11,7 @@ class Snake:
     applePlace = []
     snakeBodyPlace = []
     newSnakeBodyPlace = []
+    newBody = False
 
     def __init__(self):
         self.applePlace = [random.randint(0,numOfLines-1),random.randint(0,numOfLines-1)]
@@ -20,7 +21,7 @@ class Snake:
         pass
 
     def addBody(self):
-        pass
+        self.newBody = True
 
     def addApple(self):
         self.applePlace = [random.randint(0,numOfLines-1),random.randint(0,numOfLines-1)]
@@ -33,6 +34,9 @@ class Snake:
         self.addBody()
 
     def addMove(self, dirc):
+        if self.newBody:
+            self.newBody = False
+            self.snakeBodyPlace.append(self.snakeBodyPlace[len(self.snakeBodyPlace)-1])
         for i in range(len(self.snakeBodyPlace)):
             if i == 0:
                 if dirc == 0:
@@ -58,6 +62,11 @@ class Snake:
                         self.newSnakeBodyPlace.append([numOfLines-1,self.snakeBodyPlace[0][1]])
                     else:
                         self.newSnakeBodyPlace.append([self.snakeBodyPlace[0][0]-1,self.snakeBodyPlace[0][1]])
+
+                if self.newSnakeBodyPlace[0] == self.applePlace:
+                    self.eatApple()
+            else:
+                self.newSnakeBodyPlace.append(self.snakeBodyPlace[i-1])
 
         self.snakeBodyPlace = self.newSnakeBodyPlace
         self.newSnakeBodyPlace = []
