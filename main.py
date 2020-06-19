@@ -42,9 +42,13 @@ class Snake:
 
     def addMove(self, dirc):
         endGame = False
+        speMove = False
         if self.newBody:
             self.newBody = False
             self.snakeBodyPlace.append(self.snakeBodyPlace[len(self.snakeBodyPlace)-1])
+        if dirc == -1:
+            dirc = self.lastDirc
+            speMove = True
         for i in range(len(self.snakeBodyPlace)):
             if i == 0:
                 if dirc == 0:
@@ -106,6 +110,8 @@ class Snake:
             self.newSnakeBodyPlace = []
 
             self.drawEntity()
+        if speMove:
+            window.after(1000, lambda Zero=10: snake.addMove(-1))
 
     def drawEntity(self):
         mainCanvas.delete("all")
@@ -141,4 +147,5 @@ downButton.pack()
 leftButton = Button(mainFrame, text="Left", command=lambda Zero=3: snake.addMove(3))
 leftButton.pack()
 
+window.after(1000, lambda Zero=10: snake.addMove(-1))
 window.mainloop()
